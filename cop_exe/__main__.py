@@ -41,6 +41,7 @@ global_vars.coroutines.append(start())
 
 
 clock = pygame.time.Clock()
+typed = ''
 
 
 running = True
@@ -61,12 +62,14 @@ while running:
                             if pos == -1:
                                 pos = 1
                             box.text[-1] = box.text[-1][:pos]
+                            typed = typed[:pos - 1]
                         else:
                             box.text[-1] = box.text[-1][:-1]
+                            typed = typed[:-1]
                 elif event.key == K_RETURN:
-                    box.text.append('')
+                    box.print()
                     try:
-                        command = shlex.split(box.text[-2].removeprefix('>'))
+                        command = shlex.split(typed)
                     except Exception as e:
                         box.print('Parse error:', e)
                     else:
@@ -80,8 +83,10 @@ while running:
                             execute(box.slow_print, CREDITS)
                         else:
                             execute(box.slow_print, f'No command named "{command[0]}"')
+                    typed = ''
         elif event.type == TEXTINPUT and global_vars.allow_typing:
-            box.text[-1] += event.text
+            box.print(event.text, end='')
+            typed += event.text
         elif event.type == KEYUP:
             global_vars.pressed_keys.discard(event.key)
             if event.key == K_F11:

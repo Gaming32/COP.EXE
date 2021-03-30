@@ -5,6 +5,7 @@ from pygame.font import Font, SysFont
 from cop_exe.pygame_import import *
 from cop_exe import global_vars
 from cop_exe.co_utils import co_sleep
+from pygame import midi
 
 
 OFFSET = Vector2(10, 10)
@@ -15,17 +16,23 @@ LINE_HEIGHT = 25
 MAX_WIDTH = 49
 
 
+midi.init()
+
+
 class TextBox:
     rect: Rect
     text: list[str]
     blinked: float
     blink_on: bool
+    midi_dev: midi.Output
 
     def __init__(self, rect: Rect, start_text: Optional[str] = '') -> None:
         self.rect = rect
         self.text = start_text.split('\n')
         self.blinked = 0
         self.blink_on = True
+        self.midi_dev = midi.Output(0)
+        # self.midi_dev.set_instrument(18)
 
     def render(self, surf: Surface):
         self.blinked += global_vars.delta
@@ -52,7 +59,7 @@ class TextBox:
     def print(self, *objs, sep: str = ' ', end: str = '\n'):
         value = sep.join(str(obj) for obj in objs) + end
         sys.stdout.write(value)
-        xpos = 1
+        xpos = len(self.text[-1]) + 1
         for char in value:
             if char == '\n':
                 self.text.append('')
@@ -64,12 +71,12 @@ class TextBox:
             self.text[-1] += char
             xpos += 1
 
-    def slow_print(self, *objs, sep: str = ' ', end: str = '\n', text_time: float = 0.05):
+    def slow_print(self, *objs, sep: str = ' ', end: str = '\n', text_time: float = 0.05, midi_time: float = 0.01):
         curpressed = global_vars.pressed_keys.copy()
         skipped = False
         value = sep.join(str(obj) for obj in objs) + end
         sys.stdout.write(value)
-        xpos = 1
+        xpos = len(self.text[-1]) + 1
         for char in value:
             if char == '\n':
                 self.text.append('')
@@ -83,5 +90,8 @@ class TextBox:
             if global_vars.pressed_keys.difference(curpressed):
                 skipped = True
             if not skipped:
-                yield from co_sleep(text_time)
+                self.midi_dev.note_on(90, 63)
+                yield from co_sleep(midi_time)
+                self.midi_dev.note_off(90, 63)
+                yield from co_sleep(text_time - midi_time)
             xpos += 1
