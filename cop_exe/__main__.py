@@ -71,7 +71,7 @@ while running:
                     try:
                         command = shlex.split(typed)
                     except Exception as e:
-                        box.print('Parse error:', e)
+                        execute(box.slow_print, 'Parse error:', e)
                     else:
                         if not command:
                             box.text[-1] += '>'

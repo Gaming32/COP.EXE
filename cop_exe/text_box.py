@@ -52,7 +52,7 @@ class TextBox:
                 continue
             if i == len(self.text) - 1 and self.blink_on:
                 line += BLINK_CHAR
-            rendered = FONT.render(line, True, (255, 255, 255), (0, 0, 0))
+            rendered = FONT.render(line, True, (128, 255, 128), (0, 0, 0))
             surf.blit(rendered, destpos)
             curoffset.y += LINE_HEIGHT
 
@@ -71,7 +71,7 @@ class TextBox:
             self.text[-1] += char
             xpos += 1
 
-    def slow_print(self, *objs, sep: str = ' ', end: str = '\n', text_time: float = 0.05, midi_time: float = 0.01):
+    def slow_print(self, *objs, sep: str = ' ', end: str = '\n', text_time: float = 0.05, midi_time: float = 0.005):
         curpressed = global_vars.pressed_keys.copy()
         skipped = False
         value = sep.join(str(obj) for obj in objs) + end

@@ -1,2 +1,4 @@
-The basic commands are "help", "echo", and
-"credits".
+The basic commands are:
+ - help
+ - echo
+ - credits
