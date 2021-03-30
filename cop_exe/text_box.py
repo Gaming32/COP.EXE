@@ -4,6 +4,7 @@ from typing import Optional
 from pygame.font import Font, SysFont
 from cop_exe.pygame_import import *
 from cop_exe import global_vars
+from cop_exe.co_utils import co_sleep
 
 
 OFFSET = Vector2(10, 10)
@@ -20,13 +21,9 @@ class TextBox:
     blinked: float
     blink_on: bool
 
-    def __init__(self, rect: Rect, start_text: Optional[str] = None) -> None:
+    def __init__(self, rect: Rect, start_text: Optional[str] = '') -> None:
         self.rect = rect
-        if start_text is None:
-            self.text = ['>']
-        else:
-            self.text = start_text.split('\n')
-            self.text.append('>')
+        self.text = start_text.split('\n')
         self.blinked = 0
         self.blink_on = True
 
@@ -55,10 +52,36 @@ class TextBox:
     def print(self, *objs, sep: str = ' ', end: str = '\n'):
         value = sep.join(str(obj) for obj in objs) + end
         sys.stdout.write(value)
-        lines = []
-        for line in value.split('\n'):
-            while len(line) > MAX_WIDTH:
-                lines.append(line[:MAX_WIDTH])
-                line = line[MAX_WIDTH:]
-            lines.append(line)
-        self.text.extend(lines)
+        xpos = 1
+        for char in value:
+            if char == '\n':
+                self.text.append('')
+                xpos = 0
+                continue
+            elif xpos > MAX_WIDTH:
+                self.text.append('')
+                xpos = 0
+            self.text[-1] += char
+            xpos += 1
+
+    def slow_print(self, *objs, sep: str = ' ', end: str = '\n', text_time: float = 0.05):
+        curpressed = global_vars.pressed_keys.copy()
+        skipped = False
+        value = sep.join(str(obj) for obj in objs) + end
+        sys.stdout.write(value)
+        xpos = 1
+        for char in value:
+            if char == '\n':
+                self.text.append('')
+                xpos = 0
+                continue
+            elif xpos > MAX_WIDTH:
+                self.text.append('')
+                xpos = 0
+            self.text[-1] += char
+            curpressed.intersection_update(global_vars.pressed_keys)
+            if global_vars.pressed_keys.difference(curpressed):
+                skipped = True
+            if not skipped:
+                yield from co_sleep(text_time)
+            xpos += 1

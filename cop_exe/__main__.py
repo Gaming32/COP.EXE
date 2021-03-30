@@ -14,10 +14,30 @@ global_vars.screen = screen
 pygame.display.set_caption('COP.EXE')
 
 
+global_vars.coroutines = []
+global_vars.pressed_keys = set()
+
+
+def start():
+    global_vars.allow_typing = False
+    yield from box.slow_print(START_TEXT.strip())
+    box.print('\n>', end='')
+    global_vars.allow_typing = True
+
+
+def execute(func, *args, **kwargs):
+    def wrapper():
+        global_vars.allow_typing = False
+        yield from func(*args, **kwargs)
+        box.print('>', end='')
+        global_vars.allow_typing = True
+    global_vars.coroutines.append(wrapper())
+
+
 pygame.key.set_repeat()
-box = TextBox(Rect(660, 20, 600, 680), START_TEXT.strip())
-global_vars.allow_typing = True
+box = TextBox(Rect(660, 20, 600, 680))
 global_vars.text_box = box
+global_vars.coroutines.append(start())
 
 
 clock = pygame.time.Clock()
@@ -32,6 +52,7 @@ while running:
         if event.type == QUIT:
             running = False
         elif event.type == KEYDOWN:
+            global_vars.pressed_keys.add(event.key)
             if global_vars.allow_typing:
                 if event.key == K_BACKSPACE:
                     if len(box.text[-1]) > 1:
@@ -43,27 +64,26 @@ while running:
                         else:
                             box.text[-1] = box.text[-1][:-1]
                 elif event.key == K_RETURN:
-                    global_vars.allow_typing = False
+                    box.text.append('')
                     try:
-                        command = shlex.split(box.text[-1].removeprefix('>'))
+                        command = shlex.split(box.text[-2].removeprefix('>'))
                     except Exception as e:
                         box.print('Parse error:', e)
                     else:
                         if not command:
-                            pass
+                            box.text[-1] += '>'
                         elif command[0] == 'echo':
-                            box.print(*command[1:])
+                            execute(box.slow_print, *command[1:])
                         elif command[0] == 'help':
-                            box.print(HELP_TEXT)
+                            execute(box.slow_print, HELP_TEXT)
                         elif command[0] == 'credits':
-                            box.print(CREDITS)
+                            execute(box.slow_print, CREDITS)
                         else:
-                            box.print(f'No command called "{command[0]}"')
-                    box.text[-1] += '>'
-                    global_vars.allow_typing = True
+                            execute(box.slow_print, f'No command called "{command[0]}"')
         elif event.type == TEXTINPUT and global_vars.allow_typing:
             box.text[-1] += event.text
         elif event.type == KEYUP:
+            global_vars.pressed_keys.discard(event.key)
             if event.key == K_F11:
                 fullscreen = not fullscreen
                 flags = (FULLSCREEN | SCALED) if fullscreen else 0
@@ -71,6 +91,12 @@ while running:
                 pygame.display.init()
                 screen = pygame.display.set_mode(WINDOW_SIZE, flags)
                 global_vars.screen = screen
+
+    to_keep = []
+    for coroutine in global_vars.coroutines:
+        if next(coroutine, '__marker__') != '__marker__':
+            to_keep.append(coroutine)
+    global_vars.coroutines[:] = to_keep
 
     screen.fill(CLEAR_COLOR)
     box.render(screen)
