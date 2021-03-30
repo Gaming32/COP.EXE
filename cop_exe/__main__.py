@@ -79,7 +79,7 @@ while running:
                         elif command[0] == 'credits':
                             execute(box.slow_print, CREDITS)
                         else:
-                            execute(box.slow_print, f'No command called "{command[0]}"')
+                            execute(box.slow_print, f'No command named "{command[0]}"')
         elif event.type == TEXTINPUT and global_vars.allow_typing:
             box.text[-1] += event.text
         elif event.type == KEYUP:
