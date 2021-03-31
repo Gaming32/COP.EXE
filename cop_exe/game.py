@@ -9,11 +9,12 @@ class Game:
     enemy: Vector2
 
     def __init__(self) -> None:
-        self.enemy = Vector2(320, 360)
-        self.enemy = Vector2(345, 385)
-        self.player = Vector2(295, 335)
+        # Vector2(320, 360)
+        self.enemy = Vector2(500, 560)
+        self.player = Vector2(340, 200)
         self.commands = {
-            'move': self.move
+            'debug move': self.debug_move,
+            'left': self.move_left
         }
 
     def command_wrapper(self, command: str, *args):
@@ -41,15 +42,20 @@ class Game:
             yield from disp
 
     def render(self, surf: Surface):
-        psurf = Surface(surf.get_size()).convert_alpha()
-        psurf.fill((0, 0, 0, 0))
-        pygame.draw.circle(psurf, ENEMY_COLOR, self.enemy - global_vars.camera, 10)
-        pygame.draw.circle(psurf, PLAYER_COLOR, self.player - global_vars.camera, 10)
-        psurf.set_alpha(CHARACTER_OPACITY)
-        surf.blit(psurf, (0, 0))
+        if global_vars.intro_part > 1:
+            psurf = Surface(surf.get_size()).convert_alpha()
+            psurf.fill((0, 0, 0, 0))
+            pygame.draw.circle(psurf, ENEMY_COLOR, self.enemy, 10)
+            pygame.draw.circle(psurf, PLAYER_COLOR, self.player, 10)
+            psurf.set_alpha(CHARACTER_OPACITY)
+            surf.blit(psurf, (0, 0))
 
-    def move(self, x: int, y: int):
+    def debug_move(self, x: int, y: int):
         self.player += (x, -y)
+        yield
+
+    def move_left(self):
+        self.player.x -= 160
         yield
 
 

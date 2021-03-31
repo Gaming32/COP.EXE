@@ -13,8 +13,8 @@ fullscreen = False
 screen = pygame.display.set_mode(WINDOW_SIZE)
 global_vars.screen = screen
 pygame.display.set_caption('COP.EXE')
-global_vars.camera = Vector2(WINDOW_SIZE)
 global_vars.game = Game()
+global_vars.intro_part = 0
 
 
 global_vars.coroutines = []
@@ -23,11 +23,11 @@ global_vars.pressed_keys = set()
 
 def start():
     global_vars.allow_typing = False
-    premap_text, postmap_text = START_TEXT.split('---NEXT---')
-    yield from box.slow_print(premap_text.strip())
-    global_vars.camera = Vector2(0, 0)
-    yield from box.slow_print('\n' + postmap_text.strip())
-    box.print('\n>', end='')
+    parts = START_TEXT.split('---NEXT---')
+    for part in range(len(parts)):
+        yield from box.slow_print(parts[part].strip() + '\n')
+        global_vars.intro_part += 1
+    box.print('>', end='')
     global_vars.text_box.reset_skipped()
     global_vars.allow_typing = True
 
@@ -111,7 +111,8 @@ while running:
     global_vars.coroutines[:] = to_keep
 
     screen.fill(CLEAR_COLOR)
-    screen.blit(MAP_IMAGE, -global_vars.camera)
+    if global_vars.intro_part > 0:
+        screen.blit(MAP_IMAGE, (0, 0))
     global_vars.game.render(screen)
     box.render(screen)
 

@@ -10,8 +10,8 @@ allow_typing: bool
 text_box: TextBox
 coroutines: list[Generator]
 pressed_keys: set[int]
-camera: Vector2
 game: Game
+intro_part: int
 
 
 from cop_exe.text_box import TextBox

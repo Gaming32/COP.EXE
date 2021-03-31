@@ -24,7 +24,6 @@ class TextBox:
     text: list[str]
     blinked: float
     blink_on: bool
-    midi_dev: midi.Output
     skipped: bool
 
     def __init__(self, rect: Rect, start_text: Optional[str] = '') -> None:
@@ -32,7 +31,6 @@ class TextBox:
         self.text = start_text.split('\n')
         self.blinked = 0
         self.blink_on = True
-        self.midi_dev = midi.Output(0)
         self.skipped = False
 
     def render(self, surf: Surface):
@@ -93,8 +91,10 @@ class TextBox:
             if global_vars.pressed_keys.difference(curpressed):
                 self.skipped = True
             if not self.skipped:
-                self.midi_dev.note_on(90, 63)
+                if MIDI_ENABLED:
+                    MIDI_DEVICE.note_on(90, 63)
                 yield from co_sleep(midi_time)
-                self.midi_dev.note_off(90, 63)
+                if MIDI_ENABLED:
+                    MIDI_DEVICE.note_off(90, 63)
                 yield from co_sleep(text_time - midi_time)
             xpos += 1

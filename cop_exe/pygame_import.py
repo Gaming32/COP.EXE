@@ -12,5 +12,20 @@ import pygame.time
 from pygame import *
 from pygame.locals import *
 
-if not pygame.get_init():
-    pygame.init()
+pygame.init()
+
+
+from pygame import midi
+from typing import Optional
+MIDI_DEVICE: Optional[midi.Output]
+MIDI_ENABLED: bool
+
+try:
+    midi.init()
+    MIDI_DEVICE = midi.Output(0)
+    MIDI_ENABLED = True
+except (pygame.error, midi.MidiException) as e:
+    import sys
+    print('Unable to load midi:', e, file=sys.stderr)
+    MIDI_DEVICE = None
+    MIDI_ENABLED = False
