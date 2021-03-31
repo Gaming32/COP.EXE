@@ -4,13 +4,12 @@ import pygame
 #isort:split
 import pygame.display
 import pygame.event
-import pygame.time
 import pygame.key
+import pygame.time
 
 #isort:split
 from pygame import *
 from pygame.locals import *
-
 
 if not pygame.get_init():
     pygame.init()

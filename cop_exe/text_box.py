@@ -1,12 +1,12 @@
 import sys
 from typing import Optional
 
+from pygame import midi
 from pygame.font import Font, SysFont
-from cop_exe.pygame_import import *
+
 from cop_exe import global_vars
 from cop_exe.co_utils import co_sleep
-from pygame import midi
-
+from cop_exe.pygame_import import *
 
 OFFSET = Vector2(10, 10)
 FONT = SysFont('Lucida Console', 20)

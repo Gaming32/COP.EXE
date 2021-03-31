@@ -1,6 +1,6 @@
 from typing import Generator
-from pygame import Surface
 
+from pygame import Surface
 
 delta: float
 screen: Surface
