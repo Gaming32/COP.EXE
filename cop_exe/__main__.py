@@ -1,16 +1,20 @@
+from cop_exe.game import Game
 import shlex
 
 from cop_exe import __doc__ as START_TEXT
 from cop_exe import global_vars
-from cop_exe.assets import CREDITS, HELP_TEXT
 from cop_exe.consts import *
 from cop_exe.pygame_import import *
 from cop_exe.text_box import TextBox
+from cop_exe.co_utils import *
+
 
 fullscreen = False
 screen = pygame.display.set_mode(WINDOW_SIZE)
 global_vars.screen = screen
 pygame.display.set_caption('COP.EXE')
+global_vars.camera = Vector2(680, 640)
+global_vars.game = Game()
 
 
 global_vars.coroutines = []
@@ -24,15 +28,6 @@ def start():
     global_vars.allow_typing = True
 
 
-def execute(func, *args, **kwargs):
-    def wrapper():
-        global_vars.allow_typing = False
-        yield from func(*args, **kwargs)
-        box.print('>', end='')
-        global_vars.allow_typing = True
-    global_vars.coroutines.append(wrapper())
-
-
 pygame.key.set_repeat()
 box = TextBox(Rect(660, 20, 600, 680))
 global_vars.text_box = box
@@ -41,6 +36,9 @@ global_vars.coroutines.append(start())
 
 clock = pygame.time.Clock()
 typed = ''
+
+
+from cop_exe.assets import CREDITS, HELP_TEXT, MAP_IMAGE
 
 
 running = True
@@ -73,13 +71,15 @@ while running:
                         execute(box.slow_print, 'Parse error:', e)
                     else:
                         if not command:
-                            box.text[-1] += '>'
+                            box.print('>', end='')
                         elif command[0] == 'echo':
                             execute(box.slow_print, *command[1:])
                         elif command[0] == 'help':
                             execute(box.slow_print, HELP_TEXT)
                         elif command[0] == 'credits':
                             execute(box.slow_print, CREDITS)
+                        elif command[0] in global_vars.game.commands:
+                            execute(global_vars.game.command_wrapper, *command)
                         else:
                             execute(box.slow_print, f'No command named "{command[0]}"')
                     typed = ''
@@ -103,6 +103,8 @@ while running:
     global_vars.coroutines[:] = to_keep
 
     screen.fill(CLEAR_COLOR)
+    screen.blit(MAP_IMAGE, -global_vars.camera)
+    global_vars.game.render(screen)
     box.render(screen)
 
     pygame.display.update()
