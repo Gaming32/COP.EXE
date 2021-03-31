@@ -10,7 +10,6 @@ class Game:
     enemy: Coordinate
 
     def __init__(self) -> None:
-        # Vector2(320, 360)
         self.enemy = (3, 3)
         self.player = (2, 1)
         self.commands = {
@@ -34,7 +33,14 @@ class Game:
         for (i, arg) in enumerate(args):
             argname = argnames[i]
             if argname in argtypes:
-                args[i] = argtypes[argname](arg)
+                try:
+                    args[i] = argtypes[argname](arg)
+                except Exception:
+                    disp = global_vars.text_box.slow_print(f'Invalid {argtypes[argname].__name__}: "{arg}"')
+                    yield next(disp)
+                    import traceback
+                    traceback.print_exc()
+                    yield from disp 
         try:
             yield from self.commands[command](*args)
         except Exception as e:
