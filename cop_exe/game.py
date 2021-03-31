@@ -40,7 +40,8 @@ class Game:
                     yield next(disp)
                     import traceback
                     traceback.print_exc()
-                    yield from disp 
+                    yield from disp
+                    return
         try:
             yield from self.commands[command](*args)
         except Exception as e:
