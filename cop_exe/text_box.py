@@ -25,6 +25,7 @@ class TextBox:
     blinked: float
     blink_on: bool
     midi_dev: midi.Output
+    skipped: bool
 
     def __init__(self, rect: Rect, start_text: Optional[str] = '') -> None:
         self.rect = rect
@@ -32,7 +33,7 @@ class TextBox:
         self.blinked = 0
         self.blink_on = True
         self.midi_dev = midi.Output(0)
-        # self.midi_dev.set_instrument(18)
+        self.skipped = False
 
     def render(self, surf: Surface):
         self.blinked += global_vars.delta
@@ -71,9 +72,11 @@ class TextBox:
             self.text[-1] += char
             xpos += 1
 
+    def reset_skipped(self):
+        self.skipped = False
+
     def slow_print(self, *objs, sep: str = ' ', end: str = '\n', text_time: float = 0.05, midi_time: float = 0.005):
         curpressed = global_vars.pressed_keys.copy()
-        skipped = False
         value = sep.join(str(obj) for obj in objs) + end
         sys.stdout.write(value)
         xpos = len(self.text[-1]) + 1
@@ -88,8 +91,8 @@ class TextBox:
             self.text[-1] += char
             curpressed.intersection_update(global_vars.pressed_keys)
             if global_vars.pressed_keys.difference(curpressed):
-                skipped = True
-            if not skipped:
+                self.skipped = True
+            if not self.skipped:
                 self.midi_dev.note_on(90, 63)
                 yield from co_sleep(midi_time)
                 self.midi_dev.note_off(90, 63)

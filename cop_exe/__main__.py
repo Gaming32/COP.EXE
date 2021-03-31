@@ -13,7 +13,7 @@ fullscreen = False
 screen = pygame.display.set_mode(WINDOW_SIZE)
 global_vars.screen = screen
 pygame.display.set_caption('COP.EXE')
-global_vars.camera = Vector2(680, 640)
+global_vars.camera = Vector2(WINDOW_SIZE)
 global_vars.game = Game()
 
 
@@ -23,8 +23,12 @@ global_vars.pressed_keys = set()
 
 def start():
     global_vars.allow_typing = False
-    yield from box.slow_print(START_TEXT.strip())
+    premap_text, postmap_text = START_TEXT.split('---NEXT---')
+    yield from box.slow_print(premap_text.strip())
+    global_vars.camera = Vector2(0, 0)
+    yield from box.slow_print('\n' + postmap_text.strip())
     box.print('\n>', end='')
+    global_vars.text_box.reset_skipped()
     global_vars.allow_typing = True
 
 
@@ -78,6 +82,10 @@ while running:
                             execute(box.slow_print, HELP_TEXT)
                         elif command[0] == 'credits':
                             execute(box.slow_print, CREDITS)
+                        elif command[0] == 'clear':
+                            box.text.clear()
+                            box.text.append('')
+                            box.print('>', end='')
                         elif command[0] in global_vars.game.commands:
                             execute(global_vars.game.command_wrapper, *command)
                         else:

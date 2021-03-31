@@ -2,3 +2,4 @@ The basic commands are:
  - help
  - echo
  - credits
+ - clear

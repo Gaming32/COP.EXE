@@ -9,8 +9,9 @@ class Game:
     enemy: Vector2
 
     def __init__(self) -> None:
-        self.enemy = Vector2(1025, 1025)
-        self.player = Vector2(975, 975)
+        self.enemy = Vector2(320, 360)
+        self.enemy = Vector2(345, 385)
+        self.player = Vector2(295, 335)
         self.commands = {
             'move': self.move
         }
