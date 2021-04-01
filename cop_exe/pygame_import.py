@@ -15,8 +15,10 @@ from pygame.locals import *
 pygame.init()
 
 
-from pygame import midi
 from typing import Optional
+
+from pygame import midi
+
 MIDI_DEVICE: Optional[midi.Output]
 MIDI_ENABLED: bool
 

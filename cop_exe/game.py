@@ -1,9 +1,9 @@
 import random
 
-from cop_exe.level_data import Coordinate, LEVEL, MAX_COORDS, Node
 from pygame import Surface, Vector2
 
 from cop_exe.consts import CHARACTER_OPACITY, ENEMY_COLOR, PLAYER_COLOR
+from cop_exe.level_data import LEVEL, MAX_COORDS, Coordinate, Node
 from cop_exe.pygame_import import *
 
 
@@ -138,5 +138,5 @@ class Game:
         yield from self.player_move('down', amnt)
 
 
-from cop_exe.co_utils import *
 from cop_exe import global_vars
+from cop_exe.co_utils import *

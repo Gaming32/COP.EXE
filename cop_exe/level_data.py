@@ -2,7 +2,6 @@ from typing import Optional
 
 from pygame import Vector2
 
-
 Coordinate = tuple[float, float]
 Destination = Optional[Coordinate]
 Option = tuple[Destination, Destination]

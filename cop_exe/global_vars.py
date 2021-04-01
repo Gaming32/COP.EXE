@@ -14,5 +14,5 @@ game: Game
 intro_part: int
 
 
-from cop_exe.text_box import TextBox
 from cop_exe.game import Game
+from cop_exe.text_box import TextBox

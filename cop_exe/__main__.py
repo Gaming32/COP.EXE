@@ -1,13 +1,12 @@
-from cop_exe.game import Game
 import shlex
 
 from cop_exe import __doc__ as START_TEXT
 from cop_exe import global_vars
+from cop_exe.co_utils import *
 from cop_exe.consts import *
+from cop_exe.game import Game
 from cop_exe.pygame_import import *
 from cop_exe.text_box import TextBox
-from cop_exe.co_utils import *
-
 
 fullscreen = False
 screen = pygame.display.set_mode(WINDOW_SIZE)
@@ -43,7 +42,6 @@ typed = ''
 
 
 from cop_exe.assets import CREDITS, HELP_TEXT, MAP_IMAGE
-
 
 running = True
 while running:
