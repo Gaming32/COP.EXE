@@ -10,4 +10,3 @@ move (you can move up to two blocks):
  - right
  - up
  - down
-
