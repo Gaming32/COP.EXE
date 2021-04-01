@@ -1,2 +1,5 @@
 COP.EXE is a game created by Josiah (Gaming32)
 Glosson, and is licenced under the MIT license.
+
+No assets created outside of this competition
+have been used.

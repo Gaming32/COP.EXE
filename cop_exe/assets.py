@@ -1,7 +1,7 @@
 from pygame import Surface, image
 
 CREDITS: str
-with open('assets/credits.txt', 'r') as fp:
+with open('credits.txt', 'r') as fp:
     CREDITS = fp.read().strip()
 
 
