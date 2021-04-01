@@ -16,9 +16,6 @@ LINE_HEIGHT = 25
 MAX_WIDTH = 49
 
 
-midi.init()
-
-
 class TextBox:
     rect: Rect
     text: list[str]
