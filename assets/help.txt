@@ -3,3 +3,11 @@ The basic commands are:
  - echo
  - credits
  - clear
+To move around, use one of the following commands
+followed by a space and the number of blocks to
+move (you can move up to two blocks):
+ - left
+ - right
+ - up
+ - down
+
