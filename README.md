@@ -35,4 +35,4 @@ You can run the game by running the `run_game.py` file with Python.
 
 -----
 
-This is my [PyWeek 0b11111](https://pyweek.org/31) (31) entry.
+This is my [PyWeek 0b11111](https://pyweek.org/31) (31) entry ([See Here](https://pyweek.org/e/Gaming32/)).
