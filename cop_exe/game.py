@@ -1,4 +1,5 @@
 import random
+from typing import Callable
 
 from pygame import Surface, Vector2
 
@@ -32,6 +33,8 @@ def get_enemy_move(node: Node, enemy: tuple, player: tuple, dirs: list, dir: str
 class Game:
     player: Coordinate
     enemy: Coordinate
+    commands: dict[str, Callable[..., None]]
+    show_enemy: bool
 
     def __init__(self) -> None:
         self.enemy = (3, 3)
@@ -42,6 +45,7 @@ class Game:
             'up': self.move_up,
             'down': self.move_down,
         }
+        self.show_enemy = True
 
     def command_wrapper(self, command: str, *args):
         func = self.commands.get(command)
@@ -81,7 +85,7 @@ class Game:
         if global_vars.intro_part > 1:
             psurf = Surface(surf.get_size()).convert_alpha()
             psurf.fill((0, 0, 0, 0))
-            if enemy_pos is not None:
+            if self.show_enemy and enemy_pos is not None:
                 pygame.draw.circle(psurf, ENEMY_COLOR, enemy_pos.render, 10)
             if player_pos is not None:
                 pygame.draw.circle(psurf, PLAYER_COLOR, player_pos.render, 10)
@@ -90,7 +94,9 @@ class Game:
 
     def move_enemy(self):
         if self.player == self.enemy:
+            self.show_enemy = True
             yield from global_vars.text_box.slow_print('You win!')
+            return
         curnode = LEVEL.get(self.enemy)
         if curnode is None:
             return
@@ -105,6 +111,13 @@ class Game:
             get_enemy_move(curnode, self.enemy, self.player, dirs, 'down')
         move = random.choice(dirs)
         self.enemy = move
+        if self.show_enemy:
+            self.show_enemy = False
+            yield from global_vars.text_box.slow_print('The robber has disappeared!')
+        else:
+            if random.random() < .33:
+                self.show_enemy = True
+                yield from global_vars.text_box.slow_print('The robber has been spotted!')
 
     def player_move(self, name: str, amnt: int):
         if amnt > 2:
