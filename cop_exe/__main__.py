@@ -32,6 +32,20 @@ def start():
     global_vars.allow_typing = True
 
 
+def restart():
+    global_vars.allow_typing = False
+    global_vars.intro_part = 2
+    global_vars.game = Game()
+    box.text.clear()
+    box.text.append('')
+    *parts, intro = START_TEXT.split('---NEXT---')
+    yield from box.slow_print(intro.strip() + '\n')
+    global_vars.intro_part = 3
+    box.print('>', end='')
+    global_vars.text_box.reset_skipped()
+    global_vars.allow_typing = True
+
+
 pygame.key.set_repeat()
 box = TextBox(Rect(660, 20, 600, 680))
 global_vars.text_box = box
@@ -88,7 +102,7 @@ while running:
                         elif command[0] == 'quit':
                             running = False
                         elif command[0] == 'restart':
-                            run_function(setattr, global_vars, 'game', Game())
+                            global_vars.coroutines.append(restart())
                         elif command[0] in global_vars.game.commands:
                             execute(global_vars.game.command_wrapper, *command)
                         else:

@@ -6,12 +6,15 @@ Type "help" for help.
 
 ---NEXT---
 
-This is your map. You will need to use it a lot.
+Here is a map of the city. You will need it to
+track down and arrest any criminals.
 
 ---NEXT---
 
-A robber has been spotted leaving the bank on N.
-Bank St. Please arrest him.
+First City Bank on N. Bank St. has just been
+robbed! The suspect has been seen fleeing the
+building. Apprehend him and take him into
+custody.
 """
 
 

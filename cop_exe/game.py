@@ -1,7 +1,8 @@
+from cop_exe.texts import ROBBER_HIDDEN, ROBBER_NOT_SHOWN, ROBBER_SHOWN, WIN
 import random
 from typing import Callable
 
-from pygame import Surface, Vector2
+from pygame import Surface
 
 from cop_exe.consts import CHARACTER_OPACITY, ENEMY_COLOR, PLAYER_COLOR
 from cop_exe.level_data import LEVEL, MAX_COORDS, Coordinate, Node
@@ -95,7 +96,7 @@ class Game:
     def move_enemy(self):
         if self.player == self.enemy:
             self.show_enemy = True
-            yield from global_vars.text_box.slow_print('You win!')
+            yield from global_vars.text_box.slow_print(WIN)
             return
         curnode = LEVEL.get(self.enemy)
         if curnode is None:
@@ -113,11 +114,12 @@ class Game:
         self.enemy = move
         if self.show_enemy:
             self.show_enemy = False
-            yield from global_vars.text_box.slow_print('The robber has disappeared!')
+            yield from global_vars.text_box.slow_print(random.choice(ROBBER_HIDDEN))
+        elif random.random() < .33:
+            self.show_enemy = True
+            yield from global_vars.text_box.slow_print(random.choice(ROBBER_SHOWN))
         else:
-            if random.random() < .33:
-                self.show_enemy = True
-                yield from global_vars.text_box.slow_print('The robber has been spotted!')
+            yield from global_vars.text_box.slow_print(random.choice(ROBBER_NOT_SHOWN))
 
     def player_move(self, name: str, amnt: int):
         if amnt > 2:
