@@ -1,3 +1,4 @@
+from cop_exe.utils import run_function
 import shlex
 
 from cop_exe import __doc__ as START_TEXT
@@ -84,6 +85,10 @@ while running:
                             box.text.clear()
                             box.text.append('')
                             box.print('>', end='')
+                        elif command[0] == 'quit':
+                            running = False
+                        elif command[0] == 'restart':
+                            run_function(setattr, global_vars, 'game', Game())
                         elif command[0] in global_vars.game.commands:
                             execute(global_vars.game.command_wrapper, *command)
                         else:
