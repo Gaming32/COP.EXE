@@ -1,6 +1,6 @@
 from cop_exe.texts import ROBBER_HIDDEN, ROBBER_NOT_SHOWN, ROBBER_SHOWN, WIN
 import random
-from typing import Callable
+from typing import Callable, Union, get_args, get_origin
 import webbrowser
 
 from pygame import Surface
@@ -32,6 +32,14 @@ def get_enemy_move(node: Node, enemy: tuple, player: tuple, dirs: list, dir: str
         dirs.extend([next] * cnt)
 
 
+def get_optional_count(annotations: dict[str, type]):
+    count = 0
+    for ann in annotations.values():
+        if get_origin(ann) is Union and len(typelist := get_args(ann)) == 2 and typelist[1] is type(None):
+            count += 1
+    return count
+
+
 class Game:
     player: Coordinate
     enemy: Coordinate
@@ -56,19 +64,23 @@ class Game:
         if func is None:
             yield from global_vars.text_box.slow_print(f'No command named "{command}"')
         argcount = func.__code__.co_argcount
-        if len(args) != argcount - 1:
-            yield from global_vars.text_box.slow_print(command, 'command requires exactly', argcount - 1, 'arguments')
-            return
         argnames = func.__code__.co_varnames[1:argcount]
         argtypes = func.__annotations__
+        optional_count = get_optional_count(argtypes)
+        if len(args) < argcount - optional_count - 1 or len(args) > argcount - 1:
+            yield from global_vars.text_box.slow_print(command, 'command requires between', argcount - optional_count - 1, 'and', argcount - 1, 'arguments')
+            return
         args = list(args)
         for (i, arg) in enumerate(args):
             argname = argnames[i]
             if argname in argtypes:
+                argtype = argtypes.get(argname, str)
+                if i >= argcount - optional_count - 1:
+                    argtype = get_args(argtype)[0]
                 try:
-                    args[i] = argtypes[argname](arg)
+                    args[i] = argtype(arg)
                 except Exception:
-                    disp = global_vars.text_box.slow_print(f'Invalid {argtypes[argname].__name__}: "{arg}"')
+                    disp = global_vars.text_box.slow_print(f'Invalid {argtype.__name__}: "{arg}"')
                     yield next(disp)
                     import traceback
                     traceback.print_exc()
@@ -136,7 +148,9 @@ class Game:
         else:
             yield from global_vars.text_box.slow_print(random.choice(ROBBER_NOT_SHOWN))
 
-    def player_move(self, name: str, amnt: int):
+    def player_move(self, name: str, amnt: Optional[int]):
+        if amnt is None:
+            amnt = 1
         if self.over:
             yield from global_vars.text_box.slow_print('The game is over! Go home!')
             webbrowser.open_new_tab('https://youtu.be/QRJ38y4Jn6k?t=8')
@@ -160,16 +174,16 @@ class Game:
         self.player = next
         yield from self.move_enemy()
 
-    def move_left(self, amnt: int):
+    def move_left(self, amnt: Optional[int] = None):
         yield from self.player_move('left', amnt)
 
-    def move_right(self, amnt: int):
+    def move_right(self, amnt: Optional[int] = None):
         yield from self.player_move('right', amnt)
 
-    def move_up(self, amnt: int):
+    def move_up(self, amnt: Optional[int] = None):
         yield from self.player_move('up', amnt)
 
-    def move_down(self, amnt: int):
+    def move_down(self, amnt: Optional[int] = None):
         yield from self.player_move('down', amnt)
 
 
