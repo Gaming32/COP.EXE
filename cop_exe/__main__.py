@@ -108,9 +108,13 @@ while running:
                         else:
                             execute(box.slow_print, f'No command named "{command[0]}"')
                     typed = ''
-        elif event.type == TEXTINPUT and global_vars.allow_typing:
-            box.print(event.text, end='')
-            typed += event.text
+        elif event.type == TEXTINPUT:
+            if global_vars.allow_typing:
+                box.print(event.text, end='')
+                typed += event.text
+            elif not box.skipped:
+                box.backlog += event.text
+                typed += event.text
         elif event.type == KEYUP:
             global_vars.pressed_keys.discard(event.key)
             if event.key == K_F11:

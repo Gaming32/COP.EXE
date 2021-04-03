@@ -20,6 +20,7 @@ class TextBox:
     rect: Rect
     text: list[str]
     skipped: bool
+    backlog: str
 
     def __init__(self, rect: Rect, start_text: Optional[str] = '') -> None:
         self.rect = rect
@@ -27,6 +28,7 @@ class TextBox:
         global_vars.blinked = 0
         global_vars.blink_on = True
         self.skipped = False
+        self.backlog = ''
 
     def render(self, surf: Surface):
         global_vars.blinked += global_vars.delta
@@ -67,6 +69,8 @@ class TextBox:
 
     def reset_skipped(self):
         self.skipped = False
+        self.print(self.backlog, end='')
+        self.backlog = ''
 
     def slow_print(self, *objs, sep: str = ' ', end: str = '\n', text_time: float = 0.05, midi_time: float = 0.005):
         curpressed = global_vars.pressed_keys.copy()
