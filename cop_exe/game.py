@@ -22,14 +22,14 @@ def get_movement(choices, name, cur, amnt):
             return (cur[0], cur[1] + amnt)
 
 
-def get_enemy_move(node: Node, enemy: tuple, player: tuple, dirs: list, dir: str):
+def get_enemy_move(node: Node, enemy: tuple, player: tuple, dirs: list, dir: str, amnt: int = 1, cnt: int = 3):
     choices = getattr(node, dir)
     if choices is None:
-        next = get_movement(choices, dir, enemy, 1)
+        next = get_movement(choices, dir, enemy, amnt)
     else:
-        next = choices[0]
+        next = choices[amnt - 1]
     if next is not None and next != player:
-        dirs.append(next)
+        dirs.extend([next] * cnt)
 
 
 class Game:
@@ -111,12 +111,20 @@ class Game:
         dirs = []
         if self.enemy[0] > 0:
             get_enemy_move(curnode, self.enemy, self.player, dirs, 'left')
+            if self.enemy[0] > 1:
+                get_enemy_move(curnode, self.enemy, self.player, dirs, 'left', 2, 1)
         if self.enemy[0] < MAX_COORDS[0]:
             get_enemy_move(curnode, self.enemy, self.player, dirs, 'right')
+            if self.enemy[0] < MAX_COORDS[0] - 1:
+                get_enemy_move(curnode, self.enemy, self.player, dirs, 'right', 2, 1)
         if self.enemy[1] > 0:
             get_enemy_move(curnode, self.enemy, self.player, dirs, 'up')
+            if self.enemy[1] > 1:
+                get_enemy_move(curnode, self.enemy, self.player, dirs, 'up', 2, 1)
         if self.enemy[1] < MAX_COORDS[1]:
             get_enemy_move(curnode, self.enemy, self.player, dirs, 'down')
+            if self.enemy[1] < MAX_COORDS[1] - 1:
+                get_enemy_move(curnode, self.enemy, self.player, dirs, 'down', 2, 1)
         move = random.choice(dirs)
         self.enemy = move
         if self.show_enemy:

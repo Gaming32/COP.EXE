@@ -28,6 +28,8 @@ move (you can move up to two blocks):
  - down
 ```
 
+You can move up to two blocks in a single turn, but the enemy can only move one (except very occasionally he will move two).
+
 ## Running the game
 
 This game requires Python 3.9 or later, as well as PyGame 2.0.0 or later.
