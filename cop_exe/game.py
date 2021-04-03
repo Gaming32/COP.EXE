@@ -1,6 +1,7 @@
 from cop_exe.texts import ROBBER_HIDDEN, ROBBER_NOT_SHOWN, ROBBER_SHOWN, WIN
 import random
 from typing import Callable
+import webbrowser
 
 from pygame import Surface
 
@@ -36,6 +37,7 @@ class Game:
     enemy: Coordinate
     commands: dict[str, Callable[..., None]]
     show_enemy: bool
+    over: bool
 
     def __init__(self) -> None:
         self.enemy = (3, 3)
@@ -47,6 +49,7 @@ class Game:
             'down': self.move_down,
         }
         self.show_enemy = True
+        self.over = False
 
     def command_wrapper(self, command: str, *args):
         func = self.commands.get(command)
@@ -86,15 +89,19 @@ class Game:
         if global_vars.intro_part > 1:
             psurf = Surface(surf.get_size()).convert_alpha()
             psurf.fill((0, 0, 0, 0))
-            if self.show_enemy and enemy_pos is not None:
-                pygame.draw.circle(psurf, ENEMY_COLOR, enemy_pos.render, 10)
-            if player_pos is not None:
-                pygame.draw.circle(psurf, PLAYER_COLOR, player_pos.render, 10)
+            if self.show_enemy and self.enemy == self.player:
+                pygame.draw.circle(psurf, PLAYER_COLOR if global_vars.blink_on else ENEMY_COLOR, enemy_pos.render, 10)
+            else:
+                if self.show_enemy and enemy_pos is not None:
+                    pygame.draw.circle(psurf, ENEMY_COLOR, enemy_pos.render, 10)
+                if player_pos is not None:
+                    pygame.draw.circle(psurf, PLAYER_COLOR, player_pos.render, 10)
             psurf.set_alpha(CHARACTER_OPACITY)
             surf.blit(psurf, (0, 0))
 
     def move_enemy(self):
         if self.player == self.enemy:
+            self.over = True
             self.show_enemy = True
             yield from global_vars.text_box.slow_print(WIN)
             return
@@ -122,9 +129,12 @@ class Game:
             yield from global_vars.text_box.slow_print(random.choice(ROBBER_NOT_SHOWN))
 
     def player_move(self, name: str, amnt: int):
+        if self.over:
+            yield from global_vars.text_box.slow_print('The game is over! Go home!')
+            webbrowser.open_new_tab('https://youtu.be/QRJ38y4Jn6k?t=8')
+            return
         if amnt > 2:
             yield from global_vars.text_box.slow_print("Can't move", name, 'more than 2 blocks')
-            yield from self.move_enemy()
             return
         if amnt < 1:
             yield from global_vars.text_box.slow_print("Can't move", name, 'less than 1 block')

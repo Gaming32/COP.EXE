@@ -1,3 +1,4 @@
+from cop_exe.consts import BLINK_TIME
 import sys
 from typing import Optional
 
@@ -10,7 +11,6 @@ from cop_exe.pygame_import import *
 
 OFFSET = Vector2(10, 10)
 FONT = SysFont('Lucida Console', 20)
-BLINK_TIME = 0.75
 BLINK_CHAR = '_'
 LINE_HEIGHT = 25
 MAX_WIDTH = 49
@@ -19,22 +19,20 @@ MAX_WIDTH = 49
 class TextBox:
     rect: Rect
     text: list[str]
-    blinked: float
-    blink_on: bool
     skipped: bool
 
     def __init__(self, rect: Rect, start_text: Optional[str] = '') -> None:
         self.rect = rect
         self.text = start_text.split('\n')
-        self.blinked = 0
-        self.blink_on = True
+        global_vars.blinked = 0
+        global_vars.blink_on = True
         self.skipped = False
 
     def render(self, surf: Surface):
-        self.blinked += global_vars.delta
-        if self.blinked > BLINK_TIME:
-            self.blink_on = not self.blink_on
-            self.blinked %= BLINK_TIME
+        global_vars.blinked += global_vars.delta
+        if global_vars.blinked > BLINK_TIME:
+            global_vars.blink_on = not global_vars.blink_on
+            global_vars.blinked %= BLINK_TIME
         surf.fill((0, 0, 0), self.rect)
         curoffset = Vector2(OFFSET)
         height = (len(self.text) + 1) * LINE_HEIGHT
@@ -46,7 +44,7 @@ class TextBox:
             if destpos.y < self.rect.y:
                 curoffset.y += LINE_HEIGHT
                 continue
-            if i == len(self.text) - 1 and self.blink_on:
+            if i == len(self.text) - 1 and global_vars.blink_on:
                 line += BLINK_CHAR
             rendered = FONT.render(line, True, (128, 255, 128), (0, 0, 0))
             surf.blit(rendered, destpos)

@@ -12,6 +12,8 @@ coroutines: list[Generator]
 pressed_keys: set[int]
 game: Game
 intro_part: int
+blinked: float
+blink_on: bool
 
 
 from cop_exe.game import Game

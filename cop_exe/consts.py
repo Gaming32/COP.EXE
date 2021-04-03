@@ -9,3 +9,5 @@ CLEAR_COLOR: Color = (64, 64, 64)
 PLAYER_COLOR: Color = (0, 255, 0)
 ENEMY_COLOR: Color = (255, 0, 0)
 CHARACTER_OPACITY: int = 96
+
+BLINK_TIME = 0.75
