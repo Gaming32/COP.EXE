@@ -156,7 +156,6 @@ class Game:
             next = getattr(node, name)[amnt - 1]
         if next is None or next[0] > MAX_COORDS[0] or next[0] < 0 or next[1] > MAX_COORDS[1] or next[1] < 0:
             yield from global_vars.text_box.slow_print('There is no road leading in that direction')
-            yield from self.move_enemy()
             return
         self.player = next
         yield from self.move_enemy()
