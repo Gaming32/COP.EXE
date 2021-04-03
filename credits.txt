@@ -1,5 +1,7 @@
 COP.EXE is a game created by Josiah (Gaming32)
 Glosson, and is licenced under the MIT license.
 
-No assets created outside of this competition
-have been used.
+It was created for the PyWeek 0b11111 game jam.
+
+No assets created outside of this challenge have
+been used.
