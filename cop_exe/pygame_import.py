@@ -24,7 +24,7 @@ MIDI_ENABLED: bool
 
 try:
     midi.init()
-    MIDI_DEVICE = midi.Output(0)
+    MIDI_DEVICE = midi.Output(midi.get_default_output_id())
     MIDI_ENABLED = True
 except (pygame.error, midi.MidiException) as e:
     import sys
